@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Github, Linkedin, Mail, Phone, MapPin, ArrowUpRight, Terminal, Server, Shield, Database, Cloud, Code2, Workflow, Award } from "lucide-react";
+import { useState } from "react";
+import { Github, Linkedin, Mail, Phone, MapPin, ArrowUpRight, Terminal, Server, Shield, Database, Cloud, Code2, Workflow, Award, Download, Menu, X } from "lucide-react";
+import { toast } from "sonner";
 import { ThemeToggle } from "@/components/ThemeToggle";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,7 +27,7 @@ const skills = {
 };
 
 const highlights = [
-  { icon: Workflow, k: "~40%", v: "peak-load delay reduction via async pipeline" },
+  { icon: Workflow, k: "~90%", v: "reduction in manual effort via async scheduler" },
   { icon: Shield, k: "100+", v: "security vulnerabilities remediated" },
   { icon: Server, k: "5+", v: "cloud-native microservices in production" },
   { icon: Code2, k: "20+", v: "data & timeout bugs resolved across REST/SOAP" },
@@ -32,13 +35,25 @@ const highlights = [
 
 const experience = [
   "Designed and deployed 5+ cloud-native microservices using Spring Boot, Docker, and Kubernetes across distributed AT&T production environments.",
-  "Eliminated duplicate request handling and reduced peak-load processing delays by ~40% by architecting an async API pipeline with Executor Framework and transactional DB queue locking.",
+  "Designed and implemented an asynchronous scheduler using Java's Executor Framework to periodically fetch and process database records in parallel using multithreading, significantly reducing processing time in the front-end workflow and automating operational tasks, resulting in a ~90% reduction in manual effort.",
   "Diagnosed and resolved 20+ data inconsistency and timeout bugs across REST (JAX-RS) and SOAP (JAX-WS) interfaces.",
   "Led end-to-end RCA, bug resolution, and regression testing — cutting repeat issue rates across the platform.",
   "Validated a large-scale Oracle DB migration from on-prem to cloud via API, stress, and load testing.",
   "Drove remediation of 100+ SAST/SCA/DAST vulnerabilities, achieving compliance targets.",
   "Led peer code reviews and mentored junior developers on clean code and scalability.",
 ];
+
+function handleResumeDownload() {
+  try {
+    const current = parseInt(localStorage.getItem("resumeDownloads") || "0", 10);
+    localStorage.setItem("resumeDownloads", String(current + 1));
+  } catch (e) {
+    // localStorage may be unavailable in some environments
+  }
+  toast.success("Resume download started", {
+    description: "Thanks for your interest!",
+  });
+}
 
 function Portfolio() {
   return (
@@ -61,6 +76,15 @@ function Portfolio() {
 }
 
 function Nav() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const navLinks = [
+    { href: "#about", label: "About" },
+    { href: "#experience", label: "Experience" },
+    { href: "#skills", label: "Stack" },
+    { href: "#project", label: "Project" },
+    { href: "#contact", label: "Contact" },
+  ];
+
   return (
     <header className="sticky top-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border/50">
       <div className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
@@ -70,20 +94,57 @@ function Nav() {
           <span className="text-foreground">.dev</span>
         </a>
         <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-          <a href="#about" className="hover:text-foreground transition">About</a>
-          <a href="#experience" className="hover:text-foreground transition">Experience</a>
-          <a href="#skills" className="hover:text-foreground transition">Stack</a>
-          <a href="#project" className="hover:text-foreground transition">Project</a>
-          <a href="#contact" className="hover:text-foreground transition">Contact</a>
+          {navLinks.map((link) => (
+            <a key={link.href} href={link.href} className="hover:text-foreground transition">
+              {link.label}
+            </a>
+          ))}
         </nav>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <ThemeToggle />
-          <a href="mailto:muthyalubhavesh16281@gmail.com" className="inline-flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-md bg-primary text-primary-foreground hover:opacity-90 transition">
+          <a href="Muthyalu-Bhavesh-Resume.pdf" download onClick={handleResumeDownload} className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-md border border-border bg-surface text-foreground hover:border-primary/40 transition">
+            <Download className="size-3.5" />
+            <span>Resume</span>
+          </a>
+          <a href="mailto:muthyalubhavesh16281@gmail.com" className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-md bg-primary text-primary-foreground hover:opacity-90 transition">
             <span>Get in touch</span>
             <ArrowUpRight className="size-3.5" />
           </a>
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-md border border-border bg-surface text-foreground hover:border-primary/40 transition"
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+          </button>
         </div>
       </div>
+      {mobileOpen && (
+        <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-xl">
+          <div className="mx-auto max-w-6xl px-6 py-4 space-y-3">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className="block text-sm text-muted-foreground hover:text-foreground transition"
+              >
+                {link.label}
+              </a>
+            ))}
+            <div className="pt-3 flex flex-wrap gap-2 border-t border-border/50">
+              <a href="Muthyalu-Bhavesh-Resume.pdf" download onClick={handleResumeDownload} className="inline-flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-md border border-border bg-surface text-foreground hover:border-primary/40 transition">
+                <Download className="size-3.5" />
+                <span>Resume</span>
+              </a>
+              <a href="mailto:muthyalubhavesh16281@gmail.com" className="inline-flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-md bg-primary text-primary-foreground hover:opacity-90 transition">
+                <span>Get in touch</span>
+                <ArrowUpRight className="size-3.5" />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
@@ -142,16 +203,14 @@ function About() {
   return (
     <section id="about" className="mx-auto max-w-6xl px-6 py-24">
       <SectionHead tag="01 — About" title="Owning production stability, end to end." />
-      <div className="grid md:grid-cols-12 gap-10">
-        <p className="md:col-span-8 text-lg leading-relaxed text-muted-foreground">
+      <div className="max-w-3xl space-y-6">
+        <p className="text-lg leading-relaxed text-muted-foreground">
           I'm a backend engineer with <span className="text-foreground">3.5+ years</span> shipping systems people actually depend on — async pipelines, distributed services, security remediation, the unglamorous work behind the dashboards. I care about <span className="text-foreground">clean code</span>, <span className="text-foreground">strong system design</span>, and writing services that don't wake anyone up at 3 AM.
         </p>
-        <div className="md:col-span-4 space-y-4 text-sm">
-          <div className="p-5 rounded-lg bg-surface border border-border shadow-card">
-            <div className="font-mono text-xs text-muted-foreground mb-1">Education</div>
-            <div className="text-foreground">B.E. Electronics & Communications</div>
-            <div className="text-muted-foreground text-xs mt-1">Institute of Aeronautical Engineering · 8.42 CGPA · 2022</div>
-          </div>
+        <div className="p-5 rounded-lg bg-surface border border-border shadow-card max-w-md">
+          <div className="font-mono text-xs text-muted-foreground mb-1">Education</div>
+          <div className="text-foreground">B.E. Electronics & Communications</div>
+          <div className="text-muted-foreground text-xs mt-1">Institute of Aeronautical Engineering · 8.42 CGPA · 2022</div>
         </div>
       </div>
     </section>
@@ -279,6 +338,10 @@ function Contact() {
             <Phone className="size-4" />
             <span>+91 8309828565</span>
           </a>
+          <a href="Muthyalu-Bhavesh-Resume.pdf" download onClick={handleResumeDownload} className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-surface border border-border hover:border-primary/40 transition">
+            <Download className="size-4" />
+            <span>Download resume</span>
+          </a>
         </div>
         <div className="mt-8 flex justify-center gap-6 text-sm text-muted-foreground">
           <a href="https://linkedin.com/in/muthyalu-bhavesh/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 hover:text-foreground transition">
@@ -300,7 +363,6 @@ function Footer() {
     <footer className="border-t border-border">
       <div className="mx-auto max-w-6xl px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-muted-foreground">
         <div>© 2026 Muthyalu Bhavesh</div>
-        <div>Built with Spring in mind. Shipped with React.</div>
       </div>
     </footer>
   );
