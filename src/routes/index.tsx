@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Github, Linkedin, Mail, Phone, MapPin, ArrowUpRight, Terminal, Server, Shield, Database, Cloud, Code2, Workflow, Award, Download, Menu, X } from "lucide-react";
 import { toast } from "sonner";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { trackEvent } from "@/lib/analytics";
+
 
 
 export const Route = createFileRoute("/")({
@@ -50,12 +52,46 @@ function handleResumeDownload() {
   } catch (e) {
     // localStorage may be unavailable in some environments
   }
+  trackEvent("resume_download", { method: "direct" });
   toast.success("Resume download started", {
     description: "Thanks for your interest!",
   });
 }
 
+function trackOutbound(label: "github" | "linkedin" | "email" | "phone") {
+  trackEvent("outbound_click", { label });
+}
+
+
 function Portfolio() {
+  useEffect(() => {
+    const start = Date.now();
+    const milestones = [10, 30, 60, 120, 300];
+    const fired = new Set<number>();
+    const timers = milestones.map((s) =>
+      window.setTimeout(() => {
+        if (!fired.has(s)) {
+          fired.add(s);
+          trackEvent("time_on_page", { seconds: s });
+        }
+      }, s * 1000)
+    );
+    const sendFinal = () => {
+      const seconds = Math.round((Date.now() - start) / 1000);
+      trackEvent("session_duration", { seconds });
+    };
+    const onVis = () => {
+      if (document.visibilityState === "hidden") sendFinal();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("pagehide", sendFinal);
+    return () => {
+      timers.forEach((t) => window.clearTimeout(t));
+      document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("pagehide", sendFinal);
+    };
+  }, []);
+
   return (
     <div className="grain relative min-h-screen overflow-x-hidden">
       <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -74,6 +110,7 @@ function Portfolio() {
     </div>
   );
 }
+
 
 function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -319,6 +356,26 @@ function Project() {
 }
 
 function Contact() {
+  useEffect(() => {
+    const el = document.getElementById("contact");
+    if (!el) return;
+    let fired = false;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting && !fired) {
+            fired = true;
+            trackEvent("contact_view");
+            obs.disconnect();
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   return (
     <section id="contact" className="mx-auto max-w-6xl px-6 py-32 border-t border-border">
       <div className="text-center max-w-3xl mx-auto">
@@ -330,11 +387,11 @@ function Contact() {
           Open to backend roles where system design and ownership matter.
         </p>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
-          <a href="mailto:muthyalubhavesh16281@gmail.com" className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-primary text-primary-foreground font-medium hover:opacity-90 transition shadow-glow">
+          <a href="mailto:muthyalubhavesh16281@gmail.com" onClick={() => trackOutbound("email")} className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-primary text-primary-foreground font-medium hover:opacity-90 transition shadow-glow">
             <Mail className="size-4" />
             <span>muthyalubhavesh16281@gmail.com</span>
           </a>
-          <a href="tel:+918309828565" className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-surface border border-border hover:border-primary/40 transition">
+          <a href="tel:+918309828565" onClick={() => trackOutbound("phone")} className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-surface border border-border hover:border-primary/40 transition">
             <Phone className="size-4" />
             <span>+91 8309828565</span>
           </a>
@@ -344,11 +401,11 @@ function Contact() {
           </a>
         </div>
         <div className="mt-8 flex justify-center gap-6 text-sm text-muted-foreground">
-          <a href="https://linkedin.com/in/muthyalu-bhavesh/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 hover:text-foreground transition">
+          <a href="https://linkedin.com/in/muthyalu-bhavesh/" target="_blank" rel="noreferrer" onClick={() => trackOutbound("linkedin")} className="inline-flex items-center gap-2 hover:text-foreground transition">
             <Linkedin className="size-4" />
             <span>LinkedIn</span>
           </a>
-          <a href="https://github.com/bhavesh16281" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 hover:text-foreground transition">
+          <a href="https://github.com/bhavesh16281" target="_blank" rel="noreferrer" onClick={() => trackOutbound("github")} className="inline-flex items-center gap-2 hover:text-foreground transition">
             <Github className="size-4" />
             <span>GitHub</span>
           </a>
@@ -356,13 +413,14 @@ function Contact() {
       </div>
     </section>
   );
+
 }
 
 function Footer() {
   return (
     <footer className="border-t border-border">
-      <div className="mx-auto max-w-6xl px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-muted-foreground">
-        <div>© 2026 Muthyalu Bhavesh</div>
+      <div className="mx-auto max-w-6xl px-6 py-8 text-center text-xs font-mono text-muted-foreground">
+        © 2026 Muthyalu Bhavesh
       </div>
     </footer>
   );
