@@ -26,29 +26,33 @@ export const Route = createFileRoute("/")({
 });
 
 const skills = {
-  Languages: ["Java"],
+  Languages: ["Java", "SQL"],
   Frameworks: ["Spring Boot 3", "Spring MVC", "Spring Security", "Spring Data JPA", "Hibernate"],
   Databases: ["Oracle SQL", "MySQL", "PL/SQL"],
+  "System Design": ["Microservices", "Distributed Systems", "High Availability", "Scalability", "HLD"],
   "Cloud & DevOps": ["AWS", "Docker", "Kubernetes", "CI/CD", "Maven", "Git"],
   Security: ["JWT", "OAuth 2.0", "SAST", "SCA", "DAST"],
-  Tools: ["IntelliJ", "Postman", "Bruno", "Swagger", "Log4j"],
+  "API & Docs": ["REST APIs", "Swagger UI"],
+  "Logging & Monitoring": ["Log4j", "Dynatrace"],
 };
 
 const highlights = [
   { icon: Workflow, k: "~90%", v: "reduction in manual effort via async scheduler" },
   { icon: Shield, k: "100+", v: "security vulnerabilities remediated" },
-  { icon: Server, k: "5+", v: "cloud-native microservices in production" },
+  { icon: Server, k: "Cloud", v: "native microservices on Spring Boot + K8s" },
   { icon: Code2, k: "20+", v: "data & timeout bugs resolved across REST/SOAP" },
 ];
 
 const experience = [
-  "Designed and deployed 5+ cloud-native microservices using Spring Boot, Docker, and Kubernetes across distributed AT&T production environments.",
-  "Designed and implemented an asynchronous scheduler using Java's Executor Framework to periodically fetch and process database records in parallel using multithreading, significantly reducing processing time in the front-end workflow and automating operational tasks, resulting in a ~90% reduction in manual effort.",
-  "Diagnosed and resolved 20+ data inconsistency and timeout bugs across REST (JAX-RS) and SOAP (JAX-WS) interfaces.",
-  "Led end-to-end RCA, bug resolution, and regression testing — cutting repeat issue rates across the platform.",
-  "Validated a large-scale Oracle DB migration from on-prem to cloud via API, stress, and load testing.",
-  "Drove remediation of 100+ SAST/SCA/DAST vulnerabilities, achieving compliance targets.",
-  "Led peer code reviews and mentored junior developers on clean code and scalability.",
+  "Designed and deployed cloud-native microservices using Spring Boot, Docker, and Kubernetes — achieving high availability and seamless horizontal scaling across distributed AT&T production environments.",
+  "Designed and implemented an asynchronous scheduler using Java's Executor Framework to periodically fetch and process database records in parallel using multithreading, significantly reducing processing time and automating operational tasks — resulting in a ~90% reduction in manual effort.",
+  "Migrated legacy Java projects from manual builds to Maven, reducing build time, simplifying dependency management, and streamlining deployment processes across the team.",
+  "Improved API reliability and response consistency for critical AT&T services by diagnosing and resolving 20+ data inconsistency and timeout bugs across REST (JAX-RS) and SOAP (JAX-WS) interfaces.",
+  "Led end-to-end RCA, bug resolution, and regression testing — cutting repeat issue rates and improving platform stability.",
+  "Validated a large-scale Oracle DB migration from on-prem to cloud via API, stress, and load testing — ensuring all post-migration performance benchmarks were met without service disruption.",
+  "Maintained data integrity across high-transaction Oracle environments by identifying and resolving critical PL/SQL data errors, preventing downstream failures in AT&T's billing and provisioning systems.",
+  "Drove end-to-end remediation of 100+ SAST/SCA/DAST vulnerabilities in collaboration with security teams, reducing the attack surface and achieving compliance targets.",
+  "Elevated codebase quality by leading peer code reviews and design evaluations, mentoring junior developers on clean code and scalability best practices.",
 ];
 
 function handleResumeDownload() {
@@ -260,10 +264,21 @@ function About() {
   );
 }
 
+const cognizantExperience = [
+  "Trained on Core Java fundamentals and object-oriented programming concepts.",
+  "Developed a stock trading application using Core Java and Spring Boot, implementing features for buying, selling, and tracking stocks.",
+];
+
+const valueLabsExperience = [
+  "Worked on SQL-based data extraction and transformation to support business reporting needs.",
+  "Created business intelligence reports using QlikView, enabling data-driven insights for stakeholders.",
+];
+
 function Experience() {
   return (
     <section id="experience" className="mx-auto max-w-6xl px-6 py-24 border-t border-border">
       <SectionHead tag="02 — Experience" title="What I've shipped." />
+      {/* Accenture */}
       <div className="grid md:grid-cols-12 gap-10">
         <div className="md:col-span-4 space-y-2">
           <div className="font-mono text-xs text-muted-foreground">Dec 2022 — Present</div>
@@ -280,6 +295,38 @@ function Experience() {
           ))}
         </ul>
       </div>
+      {/* Cognizant */}
+      <div className="grid md:grid-cols-12 gap-10 mt-16 pt-16 border-t border-border">
+        <div className="md:col-span-4 space-y-2">
+          <div className="font-mono text-xs text-muted-foreground">Feb 2022 — Aug 2022</div>
+          <div className="font-display text-2xl">Cognizant</div>
+          <div className="text-sm text-muted-foreground">Programmer Analyst Trainee</div>
+        </div>
+        <ul className="md:col-span-8 space-y-5">
+          {cognizantExperience.map((line, i) => (
+            <li key={i} className="flex gap-4 group">
+              <span className="font-mono text-xs text-primary mt-1.5 shrink-0">{String(i + 1).padStart(2, "0")}</span>
+              <span className="text-muted-foreground leading-relaxed group-hover:text-foreground transition">{line}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      {/* ValueLabs */}
+      <div className="grid md:grid-cols-12 gap-10 mt-16 pt-16 border-t border-border">
+        <div className="md:col-span-4 space-y-2">
+          <div className="font-mono text-xs text-muted-foreground">Dec 2021 — Mar 2022</div>
+          <div className="font-display text-2xl">ValueLabs</div>
+          <div className="text-sm text-muted-foreground">Software Developer Intern</div>
+        </div>
+        <ul className="md:col-span-8 space-y-5">
+          {valueLabsExperience.map((line, i) => (
+            <li key={i} className="flex gap-4 group">
+              <span className="font-mono text-xs text-primary mt-1.5 shrink-0">{String(i + 1).padStart(2, "0")}</span>
+              <span className="text-muted-foreground leading-relaxed group-hover:text-foreground transition">{line}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }
@@ -288,9 +335,11 @@ const skillIcons: Record<string, typeof Server> = {
   Languages: Code2,
   Frameworks: Server,
   Databases: Database,
+  "System Design": Workflow,
   "Cloud & DevOps": Cloud,
   Security: Shield,
-  Tools: Terminal,
+  "API & Docs": Terminal,
+  "Logging & Monitoring": Award,
 };
 
 function Skills() {
